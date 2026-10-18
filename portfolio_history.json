@@ -79,5 +79,14 @@
     "crypto_usd": 413.31,
     "stocks_toman": 20159172,
     "btc_usd": 81091
+  },
+  {
+    "timestamp": "2026-10-18T17:25:41.816838+00:00",
+    "usdt_toman": 260000.0,
+    "total_nav_toman": 238515414,
+    "total_nav_usd": 917.37,
+    "crypto_usd": 412.91,
+    "stocks_toman": 20159172,
+    "btc_usd": 81123
   }
 ]

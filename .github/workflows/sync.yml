@@ -1,0 +1,32 @@
+name: Hourly Sync
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Portfolio Updater Script
+        run: python portfolio_hourly_sync.py
+
+      - name: Commit and push updated history
+        run: |
+          git config --local user.email "bot@github.com"
+          git config --local user.name "PortfolioBot"
+          git add portfolio_history.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Hourly automated portfolio sync" && git push)
+          

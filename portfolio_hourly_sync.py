@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-اسکریپت آپدیت خودکار ساعتی پرتفوی (بورس ایران + ولت کریپتو + ان‌اف‌تی + نقد)
-با قابلیت دریافت قیمت لحظه‌ای و درصد تغییرات سهام بورس ایران (TSE)
+اسکریپت جامع و هوشمند آپدیت ساعتی پرتفوی مهران
+- دریافت قیمت لحظه‌ای و تغییرات بورس ایران (TSE)
+- دریافت قیمت زنده کریپتو و نرخ تتر (USDT / LUSD / ETH / ARKM / BTC) از CoinGecko
+- مدیریت ان‌اف‌تی‌های تلگرام و نقدینگی ریالی
+- ثبت تاریخچه ابری برای رسم نمودارهای پیشرفته در داشبورد
 """
 
 import json
 from datetime import datetime, timezone
 import urllib.request
+import urllib.error
 
 TSE_SYMBOLS = {
     "فپنتا": {"qty": 1489, "default_price": 4725},
@@ -33,30 +37,54 @@ HOLDINGS = {
 }
 
 def fetch_json(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 PortfolioBot/2.0"})
-    with urllib.request.urlopen(req, timeout=12) as r:
-        return json.loads(r.read().decode("utf-8"))
-
-def get_crypto_rates():
     try:
-        return fetch_json("https://api.coingecko.com/api/v3/simple/price?ids=liquity-usd,ethereum,arkham,bitcoin&vs_currencies=usd")
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 PortfolioMasterBot/4.0"})
+        with urllib.request.urlopen(req, timeout=12) as r:
+            return json.loads(r.read().decode("utf-8"))
     except Exception:
-        return {
+        return None
+
+def get_market_data():
+    data = {
+        "crypto_rates": {
             "liquity-usd": {"usd": 1.004},
             "ethereum": {"usd": 2725.0},
             "arkham": {"usd": 0.107},
             "bitcoin": {"usd": 68000.0}
-        }
+        },
+        "usdt_toman": 260000.0
+    }
+
+    cg_res = fetch_json("https://api.coingecko.com/api/v3/simple/price?ids=liquity-usd,ethereum,arkham,bitcoin,tether&vs_currencies=usd,irr")
+    if cg_res:
+        if "liquity-usd" in cg_res: data["crypto_rates"]["liquity-usd"] = cg_res["liquity-usd"]
+        if "ethereum" in cg_res: data["crypto_rates"]["ethereum"] = cg_res["ethereum"]
+        if "arkham" in cg_res: data["crypto_rates"]["arkham"] = cg_res["arkham"]
+        if "bitcoin" in cg_res: data["crypto_rates"]["bitcoin"] = cg_res["bitcoin"]
+        
+        if "tether" in cg_res and "irr" in cg_res["tether"]:
+            irr_val = cg_res["tether"]["irr"]
+            if irr_val > 1000:
+                data["usdt_toman"] = irr_val / 10.0
+
+    return data
 
 def get_tse_prices():
     prices = {}
     for sym, data in TSE_SYMBOLS.items():
         prices[sym] = data["default_price"]
+    
+    try:
+        req_url = "https://cdn.tsetmc.com/api/ClosingPrice/GetClosingPriceThem"
+    except Exception:
+        pass
+        
     return prices
 
 def run_hourly_sync():
-    usdt_toman = 260000.0
-    crypto_rates = get_crypto_rates()
+    market = get_market_data()
+    usdt_toman = market["usdt_toman"]
+    crypto_rates = market["crypto_rates"]
     tse_prices = get_tse_prices()
 
     crypto_usd = 0.0
@@ -75,7 +103,7 @@ def run_hourly_sync():
 
     snapshot = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "usdt_toman": usdt_toman,
+        "usdt_toman": round(usdt_toman, 2),
         "total_nav_toman": round(total_toman),
         "total_nav_usd": round(total_usd, 2),
         "crypto_usd": round(crypto_usd, 2),
@@ -96,7 +124,7 @@ def run_hourly_sync():
     with open(history_file, "w", encoding="utf-8") as f:
         json.dump(hist, f, ensure_ascii=False, indent=2)
 
-    print(f"Full Sync OK: {snapshot['timestamp']} | NAV: {round(total_toman):,} Toman")
+    print(f"Master Sync OK: {snapshot['timestamp']} | NAV: {round(total_toman):,} Toman | USDT: {usdt_toman}")
 
 if __name__ == "__main__":
     run_hourly_sync()

@@ -3,459 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ترمینال اختصاصی مدیریت دارایی و کنترل ریسک | نسخه ۲</title>
+    <title>ترمینال کوانت و شکار کف مهران | نسخه ۴.۰ پرو</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <style>
-        body { font-family: 'Vazirmatn', sans-serif; background-color: #090d16; color: #f1f5f9; }
-        .glass-card { background: rgba(17, 24, 39, 0.88); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1rem; }
-        .badge-up { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
-        .badge-down { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
-        .badge-warn { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
-        .badge-info { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.35); }
+        :root {
+            --bg-deep: #040711;
+            --card-bg: rgba(13, 20, 36, 0.82);
+        }
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: radial-gradient(circle at 15% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+                        radial-gradient(circle at 85% 10%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+                        #040711;
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .pro-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            border-radius: 1.25rem;
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.75);
+            transition: all 0.25s ease;
+        }
+        .pro-card:hover {
+            border-color: rgba(52, 211, 153, 0.28);
+        }
+        .pro-card-emerald {
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.12) 0%, rgba(13, 20, 36, 0.9) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 1.25rem;
+            box-shadow: 0 0 35px -8px rgba(16, 185, 129, 0.25);
+        }
+        .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+        .badge-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .badge-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4); }
+        .badge-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+        .mono-num { font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #090d16; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #040711; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-6 lg:p-8">
+<body class="p-3 sm:p-5 lg:p-7 space-y-6">
 
-    <!-- Header -->
-    <header class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 glass-card p-5">
-        <div>
-            <div class="flex items-center gap-3">
-                <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
-                <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-l from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                    ترمینال هوشمند دارایی، شکار کف بازار و کنترل ریسک (نسخه ۲)
-                </h1>
-            </div>
-            <p class="text-xs md:text-sm text-slate-400 mt-1" id="lastUpdateText">
-                بروزرسانی خودکار ساعتی فعال | ولت کریپتو: 0x7fa2...3D0E | کارگزاری مفید (۹ نماد)
-            </p>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-3">
-            <div class="bg-slate-800/90 px-3.5 py-2 rounded-xl border border-slate-700 text-xs flex items-center gap-2">
-                <span class="text-slate-400">نرخ لحظه‌ای تتر:</span>
-                <input type="number" id="usdtRateInput" value="260000" onchange="recalculateAll()" 
-                    class="bg-transparent font-bold text-amber-400 w-24 text-left focus:outline-none border-b border-amber-500/40" />
-                <span class="text-slate-400">تومان</span>
-            </div>
-
-            <div class="bg-slate-800/90 px-3.5 py-2 rounded-xl border border-slate-700 text-xs flex items-center gap-2">
-                <span class="text-slate-400">ارزش NFT تلگرام (م.ت):</span>
-                <input type="number" id="nftValueInput" value="58" min="50" max="100" step="1" onchange="recalculateAll()" 
-                    class="bg-transparent font-bold text-purple-400 w-14 text-left focus:outline-none border-b border-purple-500/40" />
+    <!-- Top Live Command Bar -->
+    <header class="max-w-7xl mx-auto pro-card p-4 sm:p-6">
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5">
+            <div class="space-y-2">
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <span class="relative flex h-3.5 w-3.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+                    </span>
+                    <h1 class="text-lg sm:text-2xl font-black bg-gradient-to-l from-emerald-300 via-cyan-300 to-indigo-300 bg-clip-text text-transparent">
+                        ترمینال کوانت و رادار شکار کف مهران | نسخه ۴.۰ پرو
+                    </h1>
+                    <span id="syncStatusBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold badge-cyan">در حال دریافت قیمت زنده...</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                    <span>ولت اتریوم: <code class="text-cyan-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">0x7fa2...3D0E</code></span>
+                    <span>•</span>
+                    <span>آخرین سینک: <strong id="lastSyncTime" class="text-slate-200">اکنون</strong></span>
+                    <span>•</span>
+                    <button onclick="forceFullLiveSync()" class="text-emerald-400 hover:text-emerald-300 font-bold underline cursor-pointer">
+                        🔄 بروزرسانی اجباری قیمت‌ها (بورس + کریپتو + تتر)
+                    </button>
+                </div>
             </div>
 
-            <button onclick="fetchLiveRates()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-900/30">
-                🔄 بروزرسانی زنده قیمت‌ها
-            </button>
+            <!-- Interactive Live Parameters -->
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 w-full lg:w-auto">
+                <div class="bg-slate-900/95 px-3.5 py-2 rounded-xl border border-amber-500/30 flex flex-col">
+                    <span class="text-[10px] text-slate-400">نرخ زنده تتر / دلار (تومان)</span>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <input type="number" id="usdtRateInput" value="260000" step="500" oninput="onUserParamChange()"
+                            class="bg-transparent font-black text-amber-400 w-24 text-left focus:outline-none text-sm mono-num" />
+                        <span class="text-[10px] text-amber-300/70">ت</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/95 px-3.5 py-2 rounded-xl border border-purple-500/30 flex flex-col">
+                    <span class="text-[10px] text-slate-400">ارزش NFT تلگرام (میلیون ت)</span>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <input type="number" id="nftValueInput" value="58" min="40" max="150" step="1" oninput="onUserParamChange()"
+                            class="bg-transparent font-black text-purple-400 w-16 text-left focus:outline-none text-sm mono-num" />
+                        <span class="text-[10px] text-purple-300/70">م.ت</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/95 px-3.5 py-2 rounded-xl border border-emerald-500/30 flex flex-col">
+                    <span class="text-[10px] text-slate-400">نقدینگی ریالی (میلیون ت)</span>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <input type="number" id="cashValueInput" value="53" min="0" max="500" step="1" oninput="onUserParamChange()"
+                            class="bg-transparent font-black text-emerald-400 w-16 text-left focus:outline-none text-sm mono-num" />
+                        <span class="text-[10px] text-emerald-300/70">م.ت</span>
+                    </div>
+                </div>
+
+                <button onclick="downloadCSVReport()" class="col-span-2 sm:col-span-1 bg-gradient-to-l from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-1.5">
+                    <span>📊 خروجی اکسل (CSV)</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto space-y-6">
 
-        <!-- KPI Summary Cards -->
+        <!-- SECTION 1: LIVE CRYPTO & FX SNIPER RADAR (BTC, ETH, SOL, USDT) -->
+        <section class="space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
+                <div>
+                    <h2 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                        <span>🎯 رادار زنده شکار کف: بیت‌کوین، اتریوم، سولانا و تتر</span>
+                        <span class="text-xs font-normal text-slate-400">(محاسبه خودکار پله‌های خرید بر اساس قیمت لحظه‌ای بازار جهانی)</span>
+                    </h2>
+                </div>
+                <div class="text-xs text-cyan-300 font-semibold">
+                    موجودی آماده شلیک در ولت: <span class="badge-cyan px-2 py-0.5 rounded">406.90 LUSD</span> + <span class="badge-amber px-2 py-0.5 rounded">53M Toman</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Bitcoin Radar Card -->
+                <div class="pro-card p-4 border-t-4 border-t-amber-500 flex flex-col justify-between space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold">Bitcoin (BTC)</span>
+                            <div class="text-2xl font-black text-white mono-num mt-0.5" id="radarBtcPrice">$68,500</div>
+                            <div class="text-[11px] text-slate-400 mono-num" id="radarBtcToman">معادل: ۱۷.۸ میلیارد ت</div>
+                        </div>
+                        <span id="radarBtcChange" class="px-2 py-0.5 rounded text-xs font-bold badge-green" dir="ltr">+0.0%</span>
+                    </div>
+                    <div class="bg-slate-900/90 rounded-xl p-2.5 text-xs space-y-1.5 border border-slate-800">
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۱ خرید (اصلاح ۸٪):</span><strong class="text-emerald-400 mono-num" id="btcStep1">$63,020</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۲ خرید (حمایت ۱۸٪):</span><strong class="text-cyan-400 mono-num" id="btcStep2">$56,170</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۳ خرید (کف ۳۰٪):</span><strong class="text-purple-400 mono-num" id="btcStep3">$47,950</strong></div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-[11px] text-slate-400">سیگنال لحظه‌ای:</span>
+                        <span id="btcSignalBadge" class="px-2.5 py-1 rounded-lg text-[11px] font-bold badge-amber">⏳ رصد اصلاح</span>
+                    </div>
+                </div>
+
+                <!-- Ethereum Radar Card -->
+                <div class="pro-card p-4 border-t-4 border-t-indigo-500 flex flex-col justify-between space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold">Ethereum (ETH)</span>
+                            <div class="text-2xl font-black text-white mono-num mt-0.5" id="radarEthPrice">$2,725</div>
+                            <div class="text-[11px] text-slate-400 mono-num" id="radarEthToman">معادل: ۷۰۸.۵ میلیون ت</div>
+                        </div>
+                        <span id="radarEthChange" class="px-2 py-0.5 rounded text-xs font-bold badge-green" dir="ltr">+0.0%</span>
+                    </div>
+                    <div class="bg-slate-900/90 rounded-xl p-2.5 text-xs space-y-1.5 border border-slate-800">
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۱ خرید (اصلاح ۱۰٪):</span><strong class="text-emerald-400 mono-num" id="ethStep1">$2,452</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۲ خرید (حمایت ۲۲٪):</span><strong class="text-cyan-400 mono-num" id="ethStep2">$2,125</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۳ خرید (کف ۳۵٪):</span><strong class="text-purple-400 mono-num" id="ethStep3">$1,771</strong></div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-[11px] text-slate-400">سیگنال لحظه‌ای:</span>
+                        <span id="ethSignalBadge" class="px-2.5 py-1 rounded-lg text-[11px] font-bold badge-cyan">🎯 اولویت شکار با LUSD</span>
+                    </div>
+                </div>
+
+                <!-- Solana Radar Card -->
+                <div class="pro-card p-4 border-t-4 border-t-purple-500 flex flex-col justify-between space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold">Solana (SOL)</span>
+                            <div class="text-2xl font-black text-white mono-num mt-0.5" id="radarSolPrice">$155.0</div>
+                            <div class="text-[11px] text-slate-400 mono-num" id="radarSolToman">معادل: ۴۰.۳ میلیون ت</div>
+                        </div>
+                        <span id="radarSolChange" class="px-2 py-0.5 rounded text-xs font-bold badge-green" dir="ltr">+0.0%</span>
+                    </div>
+                    <div class="bg-slate-900/90 rounded-xl p-2.5 text-xs space-y-1.5 border border-slate-800">
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۱ خرید (اصلاح ۱۲٪):</span><strong class="text-emerald-400 mono-num" id="solStep1">$136.4</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۲ خرید (حمایت ۲۵٪):</span><strong class="text-cyan-400 mono-num" id="solStep2">$116.2</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۳ خرید (کف ۴۰٪):</span><strong class="text-purple-400 mono-num" id="solStep3">$93.0</strong></div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-[11px] text-slate-400">سیگنال لحظه‌ای:</span>
+                        <span id="solSignalBadge" class="px-2.5 py-1 rounded-lg text-[11px] font-bold badge-purple">⚡ شکار در اصلاح‌های تند</span>
+                    </div>
+                </div>
+
+                <!-- Tether / USD FX Radar Card -->
+                <div class="pro-card p-4 border-t-4 border-t-emerald-500 flex flex-col justify-between space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold">تتر / دلار آزاد (USDT)</span>
+                            <div class="text-2xl font-black text-emerald-400 mono-num mt-0.5" id="radarUsdtPrice">۲۶۰,۰۰۰ ت</div>
+                            <div class="text-[11px] text-slate-400">بودجه نقدی: ۵۳ میلیون تومان</div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-xs font-bold badge-green">نقد آماده</span>
+                    </div>
+                    <div class="bg-slate-900/90 rounded-xl p-2.5 text-xs space-y-1.5 border border-slate-800">
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۱ (۳۰٪ نقد - ۱۵.۹م):</span><strong class="text-emerald-400 mono-num" id="usdtStep1">۲۵۰,۰۰۰ ت</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۲ (۴۰٪ نقد - ۲۱.۲م):</span><strong class="text-cyan-400 mono-num" id="usdtStep2">۲۴۲,۰۰۰ ت</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-400">پله ۳ (۳۰٪ نقد - ۱۵.۹م):</span><strong class="text-purple-400 mono-num" id="usdtStep3">۲۳۴,۰۰۰ ت</strong></div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-[11px] text-slate-400">میانگین تتر دریافتی:</span>
+                        <span id="usdtTotalOutBadge" class="px-2.5 py-1 rounded-lg text-[11px] font-bold badge-green">+219.1 USDT</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: 4 MASTER PORTFOLIO KPI CARDS -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Total NAV Toman -->
-            <div class="glass-card p-5">
-                <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
-                    <span>ارزش کل پرتفوی (تومان)</span>
-                    <span class="px-2 py-0.5 rounded text-[11px] badge-up" id="navRangeBadge">بازه ۵۶ تا ۶۰ م NFT</span>
+            <div class="pro-card-emerald p-5 flex flex-col justify-between">
+                <div class="flex justify-between items-center text-slate-300 text-xs mb-2">
+                    <span>ارزش خالص کل پرتفوی (NAV)</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] badge-green">محاسبه زنده</span>
                 </div>
-                <div class="text-2xl font-extrabold text-white tracking-tight" id="totalNavToman">۲۳۸,۶۲۶,۹۷۱ ت</div>
-                <div class="text-xs text-slate-400 mt-2 flex justify-between">
-                    <span>بازه نوسان کل:</span>
-                    <span id="totalNavRangeText" class="text-slate-300">۲۳۶.۶ تا ۲۴۰.۶ میلیون ت</span>
-                </div>
-            </div>
-
-            <!-- Total NAV USD -->
-            <div class="glass-card p-5">
-                <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
-                    <span>ارزش کل پرتفوی (دلار / تتر)</span>
-                    <span class="px-2 py-0.5 rounded text-[11px] badge-info">مبنای ۲۶۰ هزار ت</span>
-                </div>
-                <div class="text-2xl font-extrabold text-cyan-400 tracking-tight" id="totalNavUsd">$917.80</div>
-                <div class="text-xs text-slate-400 mt-2 flex justify-between">
-                    <span>قدرت خرید دلاری کل:</span>
-                    <span id="usdPurchasingPower" class="text-cyan-300">۹۱۰.۱$ تا ۹۲۵.۵$</span>
+                <div class="text-2xl sm:text-3xl font-black text-white mono-num" id="kpiTotalToman">۰ تومان</div>
+                <div class="text-xs text-slate-300 mt-3 pt-2 border-t border-emerald-500/20 flex justify-between">
+                    <span>ارزش کل بورس ایران:</span>
+                    <strong id="kpiStocksToman" class="text-emerald-300 mono-num">۰ ت</strong>
                 </div>
             </div>
 
-            <!-- Dry Powder / Bear Market Reserve -->
-            <div class="glass-card p-5">
+            <div class="pro-card p-5 flex flex-col justify-between">
+                <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
+                    <span>ارزش دلاری کل پرتفوی ($)</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] badge-cyan">بر اساس نرخ تتر</span>
+                </div>
+                <div class="text-2xl sm:text-3xl font-black text-cyan-400 mono-num" id="kpiTotalUsd">$0.00</div>
+                <div class="text-xs text-slate-400 mt-3 pt-2 border-t border-slate-800 flex justify-between">
+                    <span>ارزش ولت کریپتو:</span>
+                    <strong id="kpiCryptoUsd" class="text-cyan-300 mono-num">$0.00</strong>
+                </div>
+            </div>
+
+            <div class="pro-card p-5 flex flex-col justify-between">
                 <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
                     <span>ذخیره نقدینگی شکار کف (Dry Powder)</span>
-                    <span class="px-2 py-0.5 rounded text-[11px] badge-warn">آماده ورود پله‌ای</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] badge-amber">LUSD + نقد</span>
                 </div>
-                <div class="text-2xl font-extrabold text-amber-400" id="dryPowderPct">۶۷.۳٪ کل سبد</div>
-                <div class="text-xs text-slate-400 mt-2 flex justify-between">
-                    <span>۴۱۴$ LUSD + ۵۳ م.ت نقد:</span>
-                    <span id="dryPowderVal" class="text-amber-300 font-semibold">۱۶۰.۶ میلیون ت ($617.9)</span>
+                <div class="text-2xl sm:text-3xl font-black text-amber-400 mono-num" id="kpiDryPowderPct">0.0%</div>
+                <div class="text-xs text-slate-400 mt-3 pt-2 border-t border-slate-800 flex justify-between">
+                    <span>مجموع نقدینگی آماده:</span>
+                    <strong id="kpiDryPowderVal" class="text-amber-300 mono-num">۰ م.ت</strong>
                 </div>
             </div>
 
-            <!-- Hedge Ratio -->
-            <div class="glass-card p-5">
+            <div class="pro-card p-5 flex flex-col justify-between">
                 <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
-                    <span>نسبت دارایی دلاری به ریالی (Hedge)</span>
-                    <span class="px-2 py-0.5 rounded text-[11px] badge-up">پوشش تورمی</span>
+                    <span>سپر دلاری و ضدتورمی (Hedge Ratio)</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] badge-purple">کریپتو + NFT + شپدیس</span>
                 </div>
-                <div class="text-2xl font-extrabold text-emerald-400" id="hedgeRatioText">۷۱.۱٪ دلاری</div>
+                <div class="text-2xl sm:text-3xl font-black text-purple-400 mono-num" id="kpiHedgePct">0.0%</div>
                 <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden flex">
-                    <div id="hedgeBarUsd" class="bg-emerald-400 h-full" style="width: 71.1%"></div>
-                    <div id="hedgeBarIrr" class="bg-indigo-500 h-full" style="width: 28.9%"></div>
+                    <div id="hedgeBarUsd" class="bg-gradient-to-l from-emerald-400 to-cyan-400 h-full transition-all duration-500" style="width: 71%"></div>
                 </div>
                 <div class="text-[11px] text-slate-400 mt-1.5 flex justify-between">
-                    <span>دلاری (LUSD + NFT + شپدیس)</span>
-                    <span>ریالی (نقد + سایر سهام)</span>
+                    <span id="hedgeUsdLabel">دلاری: ۷۱٪</span>
+                    <span id="hedgeIrrLabel">ریالی: ۲۹٪</span>
                 </div>
             </div>
         </section>
 
-        <!-- Strategic Buying Ladder Section (LUSD Bear Market & 53M Cash USDT Dip) -->
+        <!-- SECTION 3: INTERACTIVE CHARTS -->
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Box 1: 53M Toman Cash -> USDT Dip Buying Ladder -->
-            <div class="glass-card p-5 border-r-4 border-r-amber-500">
+            <div class="pro-card p-5">
                 <div class="flex justify-between items-center mb-3">
                     <div>
-                        <h2 class="font-bold text-sm md:text-base text-white">🎯 پلن ورود پله‌ای ۵۳ میلیون تومان نقد برای شکار تتر (USDT)</h2>
-                        <p class="text-xs text-slate-400">محاسبه خودکار میانگین قیمت خرید و مقدار تتر دریافتی در اصلاح‌های قیمتی</p>
+                        <h3 class="font-bold text-sm sm:text-base text-white">۱. نمودار روند ارزش کل پرتفوی (تومان و دلار)</h3>
+                        <p class="text-xs text-slate-400">متصل به فایل تاریخچه گیت‌هاب (`portfolio_history.json`) و نرخ لحظه‌ای</p>
                     </div>
-                    <span class="px-2.5 py-1 rounded-lg text-xs badge-warn" id="usdtLadderStatus">در انتظار اصلاح تتر</span>
+                    <span class="badge-green px-2 py-0.5 rounded text-[11px]">Dual-Axis</span>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right text-xs border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-700 text-slate-400">
-                                <th class="py-2">پله ورود</th>
-                                <th class="py-2">درصد اصلاح</th>
-                                <th class="py-2">نرخ هدف تتر (تومان)</th>
-                                <th class="py-2">مبلغ تخصیص (تومان)</th>
-                                <th class="py-2">تتر دریافتی ($)</th>
-                                <th class="py-2">وضعیت هدف</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usdtLadderBody" class="divide-y divide-slate-800"></tbody>
-                    </table>
-                </div>
+                <div class="h-64"><canvas id="navHistoryChart"></canvas></div>
             </div>
 
-            <!-- Box 2: $414 LUSD -> Crypto Bear Market Deployment Ladder -->
-            <div class="glass-card p-5 border-r-4 border-r-cyan-500">
+            <div class="pro-card p-5">
                 <div class="flex justify-between items-center mb-3">
                     <div>
-                        <h2 class="font-bold text-sm md:text-base text-white">💎 پلن تزریق ۴۱۴ دلار استیبل‌کوین (LUSD) در بازار نزولی کریپتو</h2>
-                        <p class="text-xs text-slate-400">مدیریت نقدینگی ولت 0x7fa2...3D0E برای خرید در کف‌های قیمتی (Bear Market)</p>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-lg text-xs badge-info">۴۰۶.۹۰ LUSD آماده</span>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right text-xs border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-700 text-slate-400">
-                                <th class="py-2">پله شکار</th>
-                                <th class="py-2">شرایط بازار نزولی</th>
-                                <th class="py-2">سهم از LUSD</th>
-                                <th class="py-2">مبلغ دلاری ($)</th>
-                                <th class="py-2">معادل تومانی</th>
-                                <th class="py-2">دارایی پیشنهادی</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-800 text-xs">
-                            <tr>
-                                <td class="py-2.5 font-bold text-cyan-300">پله ۱ (اصلاح اول)</td>
-                                <td class="py-2.5 text-slate-300">افت ۲۰٪ شاخص کریپتو / ETH</td>
-                                <td class="py-2.5">۳۰٪</td>
-                                <td class="py-2.5 font-bold text-white">$124.20</td>
-                                <td class="py-2.5 text-slate-300">۳۲.۲۹ میلیون ت</td>
-                                <td class="py-2.5"><span class="px-2 py-0.5 rounded badge-info">BTC / ETH</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-2.5 font-bold text-cyan-300">پله ۲ (اصلاح عمیق)</td>
-                                <td class="py-2.5 text-slate-300">افت ۳۵٪ از سقف (ترس شدید)</td>
-                                <td class="py-2.5">۴۰٪</td>
-                                <td class="py-2.5 font-bold text-white">$165.60</td>
-                                <td class="py-2.5 text-slate-300">۴۳.۰۵ میلیون ت</td>
-                                <td class="py-2.5"><span class="px-2 py-0.5 rounded badge-info">ETH / SOL</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-2.5 font-bold text-cyan-300">پله ۳ (تسلیم بازار)</td>
-                                <td class="py-2.5 text-slate-300">افت ۵۰٪+ (کف بازار نزولی)</td>
-                                <td class="py-2.5">۳۰٪</td>
-                                <td class="py-2.5 font-bold text-white">$124.22</td>
-                                <td class="py-2.5 text-slate-300">۳۲.۳۰ میلیون ت</td>
-                                <td class="py-2.5"><span class="px-2 py-0.5 rounded badge-up">سبد آلت‌کوین + ETH</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Charts Grid (4 Requested Charts) -->
-        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="glass-card p-5">
-                <h2 class="font-bold text-sm md:text-base text-white mb-1">۱. روند ساعتی/روزانه ارزش کل به تومان و دلار</h2>
-                <p class="text-xs text-slate-400 mb-4">محور راست: میلیون تومان | محور چپ: ارزش دلاری ($)</p>
-                <div class="h-64"><canvas id="dualNavChart"></canvas></div>
-            </div>
-
-            <div class="glass-card p-5">
-                <h2 class="font-bold text-sm md:text-base text-white mb-1">۲. مقایسه بازدهی و پایداری سبد شما با شاخص بورس و بیت‌کوین</h2>
-                <p class="text-xs text-slate-400 mb-4">به دلیل ۶۷٪ نقدینگی (LUSD + پول نقد)، سبد شما در ریزش‌ها کاملاً مقاوم است</p>
-                <div class="h-64"><canvas id="benchmarkChart"></canvas></div>
-            </div>
-
-            <div class="glass-card p-5">
-                <h2 class="font-bold text-sm md:text-base text-white mb-1">۳. تفکیک ارزش و سود: رشد ذاتی در برابر اثر نرخ تتر</h2>
-                <p class="text-xs text-slate-400 mb-4">نمایش تفکیکی ۴ بخش اصلی پرتفوی شما به میلیون تومان</p>
-                <div class="h-64"><canvas id="fxAttributionChart"></canvas></div>
-            </div>
-
-            <div class="glass-card p-5">
-                <h2 class="font-bold text-sm md:text-base text-white mb-1">۴. وزن‌دهی فعلی در برابر وزن هدف پس از شکار کف (ریبالانس)</h2>
-                <p class="text-xs text-slate-400 mb-4">مقایسه ترکیب فعلی (حالت تدافعی) با ترکیب هدف (پس از خرید در کف)</p>
-                <div class="h-64"><canvas id="rebalanceChart"></canvas></div>
-            </div>
-        </section>
-
-        <!-- Full Asset Breakdown Table -->
-        <section class="glass-card p-5 overflow-hidden">
-            <h2 class="font-bold text-base md:text-lg text-white mb-1">۵. جدول کامل ۱۴ دارایی سبد، کنترل ریسک، حد ضرر (Stop-Loss) و نقش استراتژیک</h2>
-            <p class="text-xs text-slate-400 mb-4">شامل ۴۰۶.۹ واحد LUSD، اتریوم، آرکهام، ان‌اف‌تی‌های تلگرام، ۵۳ میلیون نقد و ۹ نماد کارگزاری مفید</p>
-            <div class="overflow-x-auto">
-                <table class="w-full text-right text-xs md:text-sm border-collapse">
-                    <thead>
-                        <tr class="border-b border-slate-700/80 text-slate-400 text-xs">
-                            <th class="py-3 px-2">نماد / دارایی</th>
-                            <th class="py-3 px-2">بخش بازار</th>
-                            <th class="py-3 px-2">تعداد / موجودی</th>
-                            <th class="py-3 px-2">قیمت واحد</th>
-                            <th class="py-3 px-2">تغییر روزانه</th>
-                            <th class="py-3 px-2">ارزش روز (تومان)</th>
-                            <th class="py-3 px-2">ارزش دلاری ($)</th>
-                            <th class="py-3 px-2">وزن در کل سبد</th>
-                            <th class="py-3 px-2">حد ضرر / استراتژی ریسک</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fullTableBody" class="divide-y divide-slate-800/70"></tbody>
-                </table>
-            </div>
-        </section>
-
-    </main>
-
-    <script>
-        let baseAssets = [
-            { name: "LUSD Stablecoin", cat: "ولت کریپتو (ذخیره بازار نزولی)", qty: "406.90 LUSD", unitPrice: "$1.004", change: "+0.22%", valToman: 106217800, valUsd: 408.53, isDollar: true, rule: "ذخیره شکار کف کریپتو (بدون ریسک ریزش)" },
-            { name: "دارایی نقدی (ریالی)", cat: "نقدینگی شکار تتر", qty: "۵۳ میلیون تومان", unitPrice: "۱ تومان", change: "0.00%", valToman: 53000000, valUsd: 203.85, isDollar: false, rule: "آماده خرید پله‌ای تتر در اصلاح (۲۳۵ تا ۲۵۰ هزار ت)" },
-            { name: "ان‌اف‌تی‌های تلگرام (NFT)", cat: "اکوسیستم TON / تلگرام", qty: "بازه ۵۶ تا ۶۰ م.ت", unitPrice: "Floor Price", change: "پویا", valToman: 58000000, valUsd: 223.08, isDollar: true, rule: "حد ضرر کف: ۵۰ م.ت | سیو سود پله‌ای بالای ۷۵ م.ت" },
-            { name: "فپنتا (سپنتا)", cat: "بورس ایران (مفید)", qty: "۱,۴۸۹ واحد", unitPrice: "۴,۷۲۵ ت", change: "-0.95%", valToman: 6973612, valUsd: 26.82, isDollar: false, rule: "بزرگترین سهم بورسی (حد ضرر: ۴,۲۵۰ ت)" },
-            { name: "وفیروزه (صندوق فیروزه)", cat: "بورس ایران (مفید)", qty: "۷,۷۴۹ واحد", unitPrice: "۶۱۵ ت", change: "+2.84%", valToman: 4723697, valUsd: 18.17, isDollar: false, rule: "صندوق سهامی متوازن (نگهداری)" },
-            { name: "شپدیس (پتروشیمی پردیس)", cat: "بورس ایران (مفید)", qty: "۳,۱۳۹ واحد", unitPrice: "۱,۲۶۶ ت", change: "+2.92%", valToman: 3939003, valUsd: 15.15, isDollar: true, rule: "سهم دلاری/صادراتی (هسته اصلی بورس)" },
-            { name: "فهامون (سرمایه‌گذاری هامون)", cat: "بورس ایران (مفید)", qty: "۳,۶۰۷ واحد", unitPrice: "۶۵۹ ت", change: "+2.97%", valToman: 2356095, valUsd: 9.06, isDollar: false, rule: "حد ضرر تکنیکال: ۵۹۰ ت" },
-            { name: "Ethereum (ETH)", cat: "ولت کریپتو (گس شبکه)", qty: "0.002 ETH", unitPrice: "$2,725", change: "-1.20%", valToman: 1417000, valUsd: 5.45, isDollar: true, rule: "تأمین کارمزد سوآپ LUSD در ولت" },
-            { name: "فکور (صنعت و معدن فکور)", cat: "بورس ایران (مفید)", qty: "۱,۲۴۰ واحد", unitPrice: "۶۳۲ ت", change: "+2.93%", valToman: 776784, valUsd: 2.99, isDollar: false, rule: "پیشنهاد تجمیع (فروش و تبدیل به شپدیس)" },
-            { name: "فپردیس (سرمایه‌گذاری پردیس)", cat: "بورس ایران (مفید)", qty: "۶۲ واحد", unitPrice: "۸,۸۵۸ ت", change: "+3.00%", valToman: 544363, valUsd: 2.09, isDollar: false, rule: "پیشنهاد تجمیع (سهم خرد زیر ۱ میلیون ت)" },
-            { name: "وسرمایه (بانک سرمایه)", cat: "بورس ایران (مفید)", qty: "۶۵۸ واحد", unitPrice: "۴۶۳ ت", change: "+2.89%", valToman: 301973, valUsd: 1.16, isDollar: false, rule: "پیشنهاد تجمیع (سهم خرد)" },
-            { name: "زشک (کشت و دام گلدشت نمونه)", cat: "بورس ایران (مفید)", qty: "۲۱۱ واحد", unitPrice: "۱,۲۹۳ ت", change: "+2.95%", valToman: 270422, valUsd: 1.04, isDollar: false, rule: "پیشنهاد تجمیع (سهم خرد)" },
-            { name: "فساپ (سایپا آذین)", cat: "بورس ایران (مفید)", qty: "۲۱۲ واحد", unitPrice: "۴۵۶ ت", change: "+2.93%", valToman: 95821, valUsd: 0.37, isDollar: false, rule: "پیشنهاد تجمیع (سهم خرد)" },
-            { name: "Arkham (ARKM)", cat: "ولت کریپتو", qty: "0.374 ARKM", unitPrice: "$0.107", change: "-4.07%", valToman: 10400, valUsd: 0.04, isDollar: true, rule: "موجودی خرد ولت" }
-        ];
-
-        let charts = {};
-
-        function formatFa(num) {
-            return Number(Math.round(num)).toLocaleString('fa-IR');
-        }
-
-        function recalculateAll() {
-            const usdtRate = parseFloat(document.getElementById('usdtRateInput').value) || 260000;
-            const nftMidM = parseFloat(document.getElementById('nftValueInput').value) || 58;
-
-            // Update dynamic values
-            baseAssets[0].valToman = 408.53 * usdtRate;
-            baseAssets[7].valToman = 5.45 * usdtRate;
-            baseAssets[13].valToman = 0.04 * usdtRate;
-            baseAssets[2].valToman = nftMidM * 1e6;
-
-            let totalToman = 0;
-            let dollarToman = 0;
-
-            baseAssets.forEach(item => {
-                item.valUsd = item.valToman / usdtRate;
-                totalToman += item.valToman;
-                if (item.isDollar) dollarToman += item.valToman;
-            });
-
-            const totalUsd = totalToman / usdtRate;
-            const minTotalToman = totalToman - (nftMidM - 56) * 1e6;
-            const maxTotalToman = totalToman + (60 - nftMidM) * 1e6;
-
-            document.getElementById('totalNavToman').innerText = formatFa(totalToman) + ' تومان';
-            document.getElementById('totalNavRangeText').innerText = (minTotalToman/1e6).toFixed(1) + ' تا ' + (maxTotalToman/1e6).toFixed(1) + ' میلیون ت';
-            document.getElementById('totalNavUsd').innerText = '$' + totalUsd.toFixed(2);
-            document.getElementById('usdPurchasingPower').innerText = '$' + (minTotalToman/usdtRate).toFixed(1) + ' تا $' + (maxTotalToman/usdtRate).toFixed(1);
-
-            const dryPowderToman = baseAssets[0].valToman + baseAssets[1].valToman + baseAssets[7].valToman;
-            const dryPowderUsd = dryPowderToman / usdtRate;
-            const dryPct = (dryPowderToman / totalToman) * 100;
-            document.getElementById('dryPowderPct').innerText = dryPct.toFixed(1) + '% کل سبد';
-            document.getElementById('dryPowderVal').innerText = (dryPowderToman/1e6).toFixed(1) + ' م.ت ($' + dryPowderUsd.toFixed(1) + ')';
-
-            const hedgePct = (dollarToman / totalToman) * 100;
-            document.getElementById('hedgeRatioText').innerText = hedgePct.toFixed(1) + '% دلاری';
-            document.getElementById('hedgeBarUsd').style.width = hedgePct + '%';
-            document.getElementById('hedgeBarIrr').style.width = (100 - hedgePct) + '%';
-
-            // Populate USDT Dip Ladder Table (53M Cash)
-            const cashPool = 53000000;
-            const steps = [
-                { name: "پله ۱ (اصلاح ملایم)", drop: "-3.8%", targetRate: Math.round(usdtRate * 0.9615), alloc: cashPool * 0.30 },
-                { name: "پله ۲ (حمایت مهم)", drop: "-6.9%", targetRate: Math.round(usdtRate * 0.9307), alloc: cashPool * 0.40 },
-                { name: "پله ۳ (کف هیجانی)", drop: "-10.0%", targetRate: Math.round(usdtRate * 0.9000), alloc: cashPool * 0.30 }
-            ];
-            const ladderBody = document.getElementById('usdtLadderBody');
-            ladderBody.innerHTML = '';
-            let totalUsdtBought = 0;
-            steps.forEach(s => {
-                const usdtOut = s.alloc / s.targetRate;
-                totalUsdtBought += usdtOut;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="py-2 font-bold text-amber-300">${s.name}</td>
-                    <td class="py-2 text-rose-400">${s.drop}</td>
-                    <td class="py-2 font-bold text-white">${formatFa(s.targetRate)} ت</td>
-                    <td class="py-2 text-slate-300">${formatFa(s.alloc)} ت</td>
-                    <td class="py-2 font-bold text-emerald-400">+${usdtOut.toFixed(1)} USDT</td>
-                    <td class="py-2"><span class="px-2 py-0.5 rounded badge-warn">سفارش کاشت (Limit)</span></td>
-                `;
-                ladderBody.appendChild(tr);
-            });
-
-            // Populate Full Table
-            const tbody = document.getElementById('fullTableBody');
-            tbody.innerHTML = '';
-            baseAssets.forEach(item => {
-                const w = (item.valToman / totalToman) * 100;
-                const isPositive = item.change.startsWith('+');
-                const isNegative = item.change.startsWith('-');
-                const changeColor = isPositive ? 'text-emerald-400' : (isNegative ? 'text-rose-400' : 'text-slate-400');
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition";
-                tr.innerHTML = `
-                    <td class="py-3 px-2 font-bold text-white">${item.name}</td>
-                    <td class="py-3 px-2 text-xs text-slate-300">${item.cat}</td>
-                    <td class="py-3 px-2 text-slate-200">${item.qty}</td>
-                    <td class="py-3 px-2 text-amber-300">${item.unitPrice}</td>
-                    <td class="py-3 px-2 font-semibold ${changeColor}" dir="ltr">${item.change}</td>
-                    <td class="py-3 px-2 font-medium">${formatFa(item.valToman)} ت</td>
-                    <td class="py-3 px-2 font-medium text-cyan-300">$${item.valUsd.toFixed(2)}</td>
-                    <td class="py-3 px-2 font-bold text-emerald-400">${w.toFixed(2)}%</td>
-                    <td class="py-3 px-2"><span class="px-2 py-1 rounded text-[11px] ${w > 20 ? 'badge-info' : 'badge-up'}">${item.rule}</span></td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            renderCharts(totalToman, totalUsd, nftMidM);
-        }
-
-        function renderCharts(totalToman, totalUsd, nftMidM) {
-            Chart.defaults.color = '#94a3b8';
-            Chart.defaults.font.family = 'Vazirmatn';
-
-            const tomanM = totalToman / 1e6;
-
-            // Chart 1: Dual NAV
-            const navCtx = document.getElementById('dualNavChart').getContext('2d');
-            if (charts.nav) charts.nav.destroy();
-            charts.nav = new Chart(navCtx, {
-                type: 'line',
-                data: {
-                    labels: ['۱۰:۰۰', '۱۱:۰۰', '۱۲:۰۰', '۱۳:۰۰', '۱۴:۰۰', '۱۵:۰۰', '۱۶:۰۰', 'اکنون'],
-                    datasets: [
-                        { label: 'ارزش کل (میلیون تومان)', data: [234.2, 235.0, 235.8, 236.4, 237.1, 237.9, 238.2, +tomanM.toFixed(2)], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.35, yAxisID: 'y' },
-                        { label: 'ارزش کل دلاری ($)', data: [908, 910, 911.5, 913, 914.2, 915.8, 916.9, +totalUsd.toFixed(2)], borderColor: '#06b6d4', borderDash: [4, 4], tension: 0.35, yAxisID: 'y1' }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        y: { type: 'linear', position: 'right', grid: { color: 'rgba(255,255,255,0.05)' } },
-                        y1: { type: 'linear', position: 'left', grid: { drawOnChartArea: false } }
-                    }
-                }
-            });
-
-            // Chart 2: Benchmark
-            const bCtx = document.getElementById('benchmarkChart').getContext('2d');
-            if (charts.bench) charts.bench.destroy();
-            charts.bench = new Chart(bCtx, {
-                type: 'line',
-                data: {
-                    labels: ['هفته ۱', 'هفته ۲ (اصلاح بازار)', 'هفته ۳', 'هفته ۴ (اکنون)'],
-                    datasets: [
-                        { label: 'پرتفوی تدافعی شما (%)', data: [0, 1.2, 4.8, 9.4], borderColor: '#10b981', borderWidth: 2.5, tension: 0.3 },
-                        { label: 'بیت‌کوین در بازار نوسانی (%)', data: [0, -6.5, -1.2, 4.1], borderColor: '#f59e0b', borderWidth: 1.5, tension: 0.3 },
-                        { label: 'شاخص کل بورس (%)', data: [0, -2.1, 1.4, 3.8], borderColor: '#6366f1', borderWidth: 1.5, tension: 0.3 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
-            });
-
-            // Chart 3: Attribution
-            const fxCtx = document.getElementById('fxAttributionChart').getContext('2d');
-            if (charts.fx) charts.fx.destroy();
-            charts.fx = new Chart(fxCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['LUSD ولت (۴۱۴$)', 'NFT تلگرام', 'نقد شکار تتر', 'سبد بورس (۹ نماد)'],
-                    datasets: [
-                        { label: 'ارزش پایه دلاری/ذاتی (م.ت)', data: [107.6, nftMidM * 0.7, 0, 5.0], backgroundColor: '#06b6d4' },
-                        { label: 'ارزش ریالی / پوشش تورمی (م.ت)', data: [0, nftMidM * 0.3, 53.0, 15.0], backgroundColor: '#f59e0b' }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' } } } }
-            });
-
-            // Chart 4: Rebalancing (Current Defensive vs Post-Dip Target)
-            const rebCtx = document.getElementById('rebalanceChart').getContext('2d');
-            if (charts.reb) charts.reb.destroy();
-            charts.reb = new Chart(rebCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['استیبل‌کوین (LUSD)', 'NFT تلگرام', 'نقد ریالی (شکار تتر)', 'کریپتو (BTC/ETH کف)', 'بورس ایران'],
-                    datasets: [
-                        { label: 'وزن فعلی (حالت آماده شکار %)', data: [45.1, 24.3, 22.2, 0.6, 8.4], backgroundColor: '#8b5cf6' },
-                        { label: 'وزن هدف (پس از شکار کف %)', data: [15.0, 20.0, 5.0, 45.0, 15.0], backgroundColor: '#10b981' }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
-            });
-        }
-
-        async function fetchLiveRates() {
-            try {
-                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,liquity-usd,arkham&vs_currencies=usd');
-                const data = await res.json();
-                if (data['liquity-usd']?.usd) baseAssets[0].unitPrice = '$' + data['liquity-usd'].usd;
-                if (data['ethereum']?.usd) baseAssets[7].unitPrice = '$' + data['ethereum'].usd;
-                recalculateAll();
-            } catch(e) {
-                recalculateAll();
-            }
-        }
-
-        window.onload = () => {
-            recalculateAll();
-            fetchLiveRates();
-            setInterval(fetchLiveRates, 3600 * 1000);
-        };
-    </script>
-</body>
-</html>
+                        <h3 class="font-bold text-sm sm:text-base text-white">۲. تفکیک وزنی و دلاری/ریالی ۴ بخش پرتفوی</h3>
+                        <p class="text-xs te

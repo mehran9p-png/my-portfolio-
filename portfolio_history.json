@@ -37274,5 +37274,154 @@
         "val_toman": 10854
       }
     ]
+  },
+  {
+    "timestamp": "2026-10-30T05:31:17.563577+00:00",
+    "usdt_toman": 271350,
+    "total_nav_toman": 249093309,
+    "total_nav_usd": 917.98,
+    "stocks_toman": 20159172,
+    "crypto_toman": 117934137,
+    "crypto_usd": 434.62,
+    "nft_toman": 58000000,
+    "cash_toman": 53000000,
+    "market_radar": {
+      "btc_usd": 78485.0,
+      "btc_change": -2.25,
+      "eth_usd": 2245.01,
+      "eth_change": -3.45,
+      "sol_usd": 97.86,
+      "sol_change": -2.61
+    },
+    "stocks_detail": [
+      {
+        "symbol": "فپنتا",
+        "name": "فپنتا (لوله و پروفیل سپنتا)",
+        "qty": 1489,
+        "price_toman": 4725,
+        "change_pct": 0.0,
+        "val_toman": 7035525,
+        "stop_loss": 4250,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "وفیروزه",
+        "name": "وفیروزه (صندوق سهامی فیروزه)",
+        "qty": 7749,
+        "price_toman": 615,
+        "change_pct": 0.0,
+        "val_toman": 4765635,
+        "stop_loss": 550,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "شپدیس",
+        "name": "شپدیس (پتروشیمی پردیس)",
+        "qty": 3139,
+        "price_toman": 1266,
+        "change_pct": 0.0,
+        "val_toman": 3973974,
+        "stop_loss": 1140,
+        "is_dollar": true,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "فهامون",
+        "name": "فهامون (سرمایه‌گذاری هامون)",
+        "qty": 3607,
+        "price_toman": 659,
+        "change_pct": 0.0,
+        "val_toman": 2377013,
+        "stop_loss": 590,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "فکور",
+        "name": "فکور (فکور صنعت تهران)",
+        "qty": 1240,
+        "price_toman": 632,
+        "change_pct": 0.0,
+        "val_toman": 783680,
+        "stop_loss": 570,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "فپردیس",
+        "name": "فپردیس (سرمایه‌گذاری پردیس)",
+        "qty": 62,
+        "price_toman": 8858,
+        "change_pct": 0.0,
+        "val_toman": 549196,
+        "stop_loss": 8000,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "وسرمایه",
+        "name": "وسرمایه (بانک سرمایه)",
+        "qty": 658,
+        "price_toman": 463,
+        "change_pct": 0.0,
+        "val_toman": 304654,
+        "stop_loss": 415,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "زشک",
+        "name": "زشک (کشت و دامداری فکا)",
+        "qty": 211,
+        "price_toman": 1293,
+        "change_pct": 0.0,
+        "val_toman": 272823,
+        "stop_loss": 1160,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "فساپ",
+        "name": "فساپ (سایپا آذین)",
+        "qty": 212,
+        "price_toman": 456,
+        "change_pct": 0.0,
+        "val_toman": 96672,
+        "stop_loss": 410,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      }
+    ],
+    "crypto_detail": [
+      {
+        "symbol": "LUSD",
+        "name": "Liquity USD (ذخیره شکار کف)",
+        "qty": 406.9,
+        "price_usd": 1.057,
+        "change_pct": 5.23,
+        "val_usd": 430.09,
+        "val_toman": 116704922
+      },
+      {
+        "symbol": "ETH",
+        "name": "Ethereum (گس و ذخیره)",
+        "qty": 0.002,
+        "price_usd": 2245.01,
+        "change_pct": -3.45,
+        "val_usd": 4.49,
+        "val_toman": 1218362
+      },
+      {
+        "symbol": "ARKM",
+        "name": "Arkham Intelligence",
+        "qty": 0.374,
+        "price_usd": 0.106839,
+        "change_pct": -10.99,
+        "val_usd": 0.04,
+        "val_toman": 10854
+      }
+    ]
   }
 ]

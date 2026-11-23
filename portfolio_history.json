@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": "2026-10-18T15:22:00.334808+00:00",
-    "usdt_toman": 260000.0,
-    "total_nav_toman": 233623755,
-    "total_nav_usd": 898.55,
-    "crypto_usd": 413.33,
-    "stocks_toman": 20159172,
-    "btc_usd": 81111
-  },
-  {
     "timestamp": "2026-10-18T15:34:27.049234+00:00",
     "usdt_toman": 260000.0,
     "total_nav_toman": 233621733,
@@ -102514,6 +102505,155 @@
         "qty": 0.374,
         "price_usd": 0.077512,
         "change_pct": 1.52,
+        "val_usd": 0.03,
+        "val_toman": 8142
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-11-23T03:18:43.477254+00:00",
+    "usdt_toman": 271389,
+    "total_nav_toman": 248817361,
+    "total_nav_usd": 916.83,
+    "stocks_toman": 26005093,
+    "crypto_toman": 111812268,
+    "crypto_usd": 412.0,
+    "nft_toman": 58000000,
+    "cash_toman": 53000000,
+    "market_radar": {
+      "btc_usd": 61056.0,
+      "btc_change": 3.02,
+      "eth_usd": 1718.0,
+      "eth_change": 3.56,
+      "sol_usd": 70.81,
+      "sol_change": 2.22
+    },
+    "stocks_detail": [
+      {
+        "symbol": "فپنتا",
+        "name": "فپنتا (لوله و پروفیل سپنتا)",
+        "qty": 1489,
+        "price_toman": 4725,
+        "change_pct": 0.0,
+        "val_toman": 7035525,
+        "stop_loss": 4250,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "وفیروزه",
+        "name": "وفیروزه (صندوق سهامی فیروزه)",
+        "qty": 7749,
+        "price_toman": 615,
+        "change_pct": 0.0,
+        "val_toman": 4765635,
+        "stop_loss": 550,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "شپدیس",
+        "name": "شپدیس (پتروشیمی پردیس)",
+        "qty": 3139,
+        "price_toman": 2817,
+        "change_pct": 0.0,
+        "val_toman": 8842563,
+        "stop_loss": 1140,
+        "is_dollar": true,
+        "source": "زنده (TSETMC)"
+      },
+      {
+        "symbol": "فهامون",
+        "name": "فهامون (سرمایه‌گذاری هامون)",
+        "qty": 3607,
+        "price_toman": 659,
+        "change_pct": 0.0,
+        "val_toman": 2377013,
+        "stop_loss": 590,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "فکور",
+        "name": "فکور (فکور صنعت تهران)",
+        "qty": 1240,
+        "price_toman": 1473,
+        "change_pct": -0.74,
+        "val_toman": 1826520,
+        "stop_loss": 570,
+        "is_dollar": false,
+        "source": "زنده (TSETMC)"
+      },
+      {
+        "symbol": "فپردیس",
+        "name": "فپردیس (سرمایه‌گذاری پردیس)",
+        "qty": 62,
+        "price_toman": 8858,
+        "change_pct": 0.0,
+        "val_toman": 549196,
+        "stop_loss": 8000,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "وسرمایه",
+        "name": "وسرمایه (بانک سرمایه)",
+        "qty": 658,
+        "price_toman": 357,
+        "change_pct": 0.0,
+        "val_toman": 234906,
+        "stop_loss": 415,
+        "is_dollar": false,
+        "source": "زنده (TSETMC)"
+      },
+      {
+        "symbol": "زشک",
+        "name": "زشک (کشت و دامداری فکا)",
+        "qty": 211,
+        "price_toman": 1293,
+        "change_pct": 0.0,
+        "val_toman": 272823,
+        "stop_loss": 1160,
+        "is_dollar": false,
+        "source": "پایه (آفلاین)"
+      },
+      {
+        "symbol": "فساپ",
+        "name": "فساپ (سایپا آذین)",
+        "qty": 212,
+        "price_toman": 476,
+        "change_pct": 0.21,
+        "val_toman": 100912,
+        "stop_loss": 410,
+        "is_dollar": false,
+        "source": "زنده (TSETMC)"
+      }
+    ],
+    "crypto_detail": [
+      {
+        "symbol": "LUSD",
+        "name": "Liquity USD (ذخیره شکار کف)",
+        "qty": 406.9,
+        "price_usd": 1.004,
+        "change_pct": -0.06,
+        "val_usd": 408.53,
+        "val_toman": 110870548
+      },
+      {
+        "symbol": "ETH",
+        "name": "Ethereum (گس و ذخیره)",
+        "qty": 0.002,
+        "price_usd": 1718.0,
+        "change_pct": 3.56,
+        "val_usd": 3.44,
+        "val_toman": 933578
+      },
+      {
+        "symbol": "ARKM",
+        "name": "Arkham Intelligence",
+        "qty": 0.374,
+        "price_usd": 0.07743,
+        "change_pct": 1.8,
         "val_usd": 0.03,
         "val_toman": 8142
       }
